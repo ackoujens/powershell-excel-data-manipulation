@@ -48,32 +48,24 @@ $Workbook=OpenExcelBook -FileName "$PSScriptRoot\test-sheet.xlsx"
 $Row=2
 
 do {
-  $Data=ReadCellData -Workbook $Workbook -Cell "A$Row"
+  write-host "Parsing row " $Row
+  $FirstName=ReadCellData -Workbook $Workbook -Cell "A$Row"
 
-  if ($Data.length -ne 0) {
+  if ($FirstName.length -ne 0) {
     $Doc=OpenWordDoc -Filename "$PSScriptRoot\test-document.docx"
-    SearchAWord -Document $Doc -findtext '***FirstName***' -replacewithtext $Data
+    SearchAWord -Document $Doc -findtext '***FirstName***' -replacewithtext $FirstName
 
-    $Data=ReadCellData -Workbook $Workbook -Cell "B$Row"
-    SearchAWord -Document $Doc -findtext '***LastName***' -replacewithtext $Data
+    $LastName=ReadCellData -Workbook $Workbook -Cell "B$Row"
+    SearchAWord -Document $Doc -findtext '***LastName***' -replacewithtext $LastName
 
-    $Data=ReadCellData -Workbook $Workbook -Cell "C$Row"
-    SearchAWord -Document $Doc -findtext '***StreetAddress***' -replacewithtext $Data
-
-    $Data=ReadCellData -Workbook $Workbook -Cell "D$Row"
-    SearchAWord -Document $Doc -findtext '***City***' -replacewithtext $Data
-
-    $Data=ReadCellData -Workbook $Workbook -Cell "E$Row"
-    SearchAWord -Document $Doc -findtext '***State***' -replacewithtext $Data
-
-    $Data=ReadCellData -Workbook $Workbook -Cell "F$Row"
-    SearchAWord -Document $Doc -findtext '***Country***' -replacewithtext $Data
-
-    $SaveName="$FirstName-$LastName.docx"
+    $SaveName="$PSScriptRoot\output\$FirstName-$LastName.docx"
     SaveAsWordDoc -document $Doc -Filename $Savename
 
     $Row++
+
+    # DEBUG
+    write-host "ROW: " $Row - "FIRST NAME: " $FirstName - "LAST NAME: " $LastName
   }
 
-  SaveExcelBook -workbook $Workbook
-} while ($Data.length -ne 0)
+} while ($Row -ne 10)
+SaveExcelBook -workbook $Workbook
