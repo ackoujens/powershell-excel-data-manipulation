@@ -16,11 +16,14 @@ function SearchAWord($Document,$findtext,$replacewithtext) {
   $matchDiacritics = $false;
   $matchAlefHamza = $false;
   $matchControl = $false;
-  $read_only = $false;
-  $visible = $true;
+
+  # TODO Ommit or not to ommit? (Problem: var not used in code)
+  # $read_only = $false;
+  # $visible = $true;
+
   $replace = 2;
   $wrap = 1;
-  $FindReplace.Execute($findText, $matchCase, $matchWholeWord, $matchWildCards, $matchSoundsLike, $matchAllWordForms, $forward, $wrap, $format, $replaceWithText, $replace, $matchKashida ,$matchDiacritics, $matchAlefHamza, $matchControl)
+  $FindReplace.Execute($findText, $matchCase, $matchWholeWord, $matchWildCards, $matchSoundsLike, $matchAllWordForms, $forward, $wrap, $format, $replaceWithText, $replace, $matchKashida ,$matchDiacritics, $matchAlefHamza, $matchControl) |out-null
 }
 
 function SaveAsWordDoc($Document,$FileName) {
@@ -44,22 +47,42 @@ function ReadCellData($Workbook,$Cell) {
 }
 
 # Open Excel sheet
-$Workbook=OpenExcelBook -FileName "$PSScriptRoot\test-sheet.xlsx"
+$Workbook=OpenExcelBook -FileName "$PSScriptRoot\overzicht_nieuwe_medewerkers.xlsx"
 $Row=2
 
 do {
   write-host "Parsing row " $Row
-  $FirstName=ReadCellData -Workbook $Workbook -Cell "A$Row"
+  $name=ReadCellData -Workbook $Workbook -Cell "D$Row"
 
-  if ($FirstName.length -ne 0) {
-    $Doc=OpenWordDoc -Filename "$PSScriptRoot\test-document.docx"
-    SearchAWord -Document $Doc -findtext '***FirstName***' -replacewithtext $FirstName
+  if ($name.length -ne 0) {
+    $Doc=OpenWordDoc -Filename "$PSScriptRoot\document-nieuwe-werknemer.docx"
 
-    $LastName=ReadCellData -Workbook $Workbook -Cell "B$Row"
-    SearchAWord -Document $Doc -findtext '***LastName***' -replacewithtext $LastName
+    # Name
+    $firstName=$name.Split(" ")[0]
+    $lastName=$name.Substring($firstName.length+1)
+    SearchAWord -Document $Doc -findtext '***firstName***' -replacewithtext $firstName
+    SearchAWord -Document $Doc -findtext '***lastName***' -replacewithtext $lastName
 
+    # Team
+    $team=ReadCellData -Workbook $Workbook -Cell "C$Row"
+    $teamNum=$team.Split(" ")[0]
+    $teamName=$team.Split(" ")[1]
+    SearchAWord -Document $Doc -findtext '***teamNum***' -replacewithtext $teamNum
+    SearchAWord -Document $Doc -findtext '***teamName***' -replacewithtext $teamName
+
+    # Delivery details
+    $deviceNum=ReadCellData -Workbook $Workbook -Cell "M$Row"
+    $sessionDate=ReadCellData -Workbook $Workbook -Cell "T$Row"
+    SearchAWord -Document $Doc -findtext '***deviceNum***' -replacewithtext $deviceNum
+    SearchAWord -Document $Doc -findtext '***sessionDate***' -replacewithtext $sessionDate
+
+    # TODO Replace empty space in signature field with actual signature
+
+    # Document creation
     $SaveName="$PSScriptRoot\output\$FirstName-$LastName.docx"
     SaveAsWordDoc -document $Doc -Filename $Savename
+
+    # TODO Send to printer action
 
     $Row++
 
