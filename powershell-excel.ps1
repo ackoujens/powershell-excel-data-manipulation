@@ -1,30 +1,5 @@
-function OpenWordDoc($Filename) {
-  $Word=NEW-Object -comobject Word.Application
-  return $Word.documents.open($Filename)
-}
-
-function SearchAWord($Document,$findtext,$replacewithtext) {
-  $FindReplace=$Document.ActiveWindow.Selection.Find
-  $matchCase = $false;
-  $matchWholeWord = $true;
-  $matchWildCards = $false;
-  $matchSoundsLike = $false;
-  $matchAllWordForms = $false;
-  $forward = $true;
-  $format = $false;
-  $matchKashida = $false;
-  $matchDiacritics = $false;
-  $matchAlefHamza = $false;
-  $matchControl = $false;
-
-  # TODO Ommit or not to ommit? (Problem: var not used in code)
-  # $read_only = $false;
-  # $visible = $true;
-
-  $replace = 2;
-  $wrap = 1;
-  $FindReplace.Execute($findText, $matchCase, $matchWholeWord, $matchWildCards, $matchSoundsLike, $matchAllWordForms, $forward, $wrap, $format, $replaceWithText, $replace, $matchKashida ,$matchDiacritics, $matchAlefHamza, $matchControl) |out-null
-}
+# Includes
+. .\include\office\WordObject.ps1
 
 function SaveAsWordDoc($Document,$FileName) {
   $Document.Saveas([REF]$Filename)
@@ -55,26 +30,39 @@ do {
   $name=ReadCellData -Workbook $Workbook -Cell "D$Row"
 
   if ($name.length -ne 0) {
-    $Doc=OpenWordDoc -Filename "$PSScriptRoot\document-nieuwe-werknemer.docx"
+    # Init WordObject
+    $wordObject = [WordObject]::new("$PSScriptRoot\document-nieuwe-werknemer.docx");
 
     # Name
     $firstName=$name.Split(" ")[0]
     $lastName=$name.Substring($firstName.length+1)
-    SearchAWord -Document $Doc -findtext '***firstName***' -replacewithtext $firstName
-    SearchAWord -Document $Doc -findtext '***lastName***' -replacewithtext $lastName
+
+    # SearchAWord -Document $Doc -findtext '***firstName***' -replacewithtext $firstName
+    $wordObject.replaceWord("***firstName***", $firstName);
+    
+    # SearchAWord -Document $Doc -findtext '***lastName***' -replacewithtext $lastName
+    $wordObject.replaceWord("***lastName***", $lastName);
 
     # Team
     $team=ReadCellData -Workbook $Workbook -Cell "C$Row"
     $teamNum=$team.Split(" ")[0]
     $teamName=$team.Split(" ")[1]
-    SearchAWord -Document $Doc -findtext '***teamNum***' -replacewithtext $teamNum
-    SearchAWord -Document $Doc -findtext '***teamName***' -replacewithtext $teamName
+    
+    # SearchAWord -Document $Doc -findtext '***teamNum***' -replacewithtext $teamNum
+    $wordObject.replaceWord("***teamNum***", $teamNum);
+
+    # SearchAWord -Document $Doc -findtext '***teamName***' -replacewithtext $teamName
+    $wordObject.replaceWord("***teamName***", $teamName);
 
     # Delivery details
     $deviceNum=ReadCellData -Workbook $Workbook -Cell "M$Row"
     $sessionDate=ReadCellData -Workbook $Workbook -Cell "T$Row"
-    SearchAWord -Document $Doc -findtext '***deviceNum***' -replacewithtext $deviceNum
-    SearchAWord -Document $Doc -findtext '***sessionDate***' -replacewithtext $sessionDate
+    
+    # SearchAWord -Document $Doc -findtext '***deviceNum***' -replacewithtext $deviceNum
+    $wordObject.replaceWord("***deviceNum***", $deviceNum);
+    
+    # SearchAWord -Document $Doc -findtext '***sessionDate***' -replacewithtext $sessionDate
+    $wordObject.replaceWord("***sessionDate***", $sessionDate);
 
     # TODO Replace empty space in signature field with actual signature
 
@@ -90,5 +78,5 @@ do {
     write-host "ROW: " $Row - "FIRST NAME: " $FirstName - "LAST NAME: " $LastName
   }
 
-} while ($Row -ne 10)
+} while ($Row -ne 2)
 SaveExcelBook -workbook $Workbook
