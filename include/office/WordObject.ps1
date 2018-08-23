@@ -20,7 +20,7 @@ class WordObject {
         return $file.documents.open($filepath);
     }
     
-    searchWord([string]$target, [string]$word) {
+    [void] searchWord([string]$target, [string]$word) {
         $FindReplace=$this.wordDoc.ActiveWindow.Selection.Find
         $matchCase = $false;
         $matchWholeWord = $true;
@@ -44,11 +44,16 @@ class WordObject {
       }
 
     # Using a word document as a template
-    replaceWord([string]$target, [string]$word) {
-        searchWord($target, $word);
+    [void] replaceWord([string]$target, [string]$word) {
+        $this.searchWord($target, $word);
     }
 
-    cleanup() {
+    [void] saveDocument([string]$fileName) {
+        $this.wordDoc.Saveas($filename);
+        $this.wordDoc.close();
+    }
+
+    [void] cleanup() {
         Stop-Process -Name "WINWORD";
     }
 }

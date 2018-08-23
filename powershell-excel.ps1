@@ -1,11 +1,6 @@
 # Includes
 . .\include\office\WordObject.ps1
 
-function SaveAsWordDoc($Document,$FileName) {
-  $Document.Saveas([REF]$Filename)
-  $Document.close()
-}
-
 function OpenExcelBook($FileName) {
   $Excel=new-object -ComObject Excel.Application
   return $Excel.workbooks.open($Filename)
@@ -67,8 +62,10 @@ do {
     # TODO Replace empty space in signature field with actual signature
 
     # Document creation
-    $SaveName="$PSScriptRoot\output\$FirstName-$LastName.docx"
-    SaveAsWordDoc -document $Doc -Filename $Savename
+    # $SaveName="$PSScriptRoot\output\$FirstName-$LastName.docx"
+    # SaveAsWordDoc -document $Doc -Filename $Savename
+    $path = $PSScriptRoot + "\output\" + $FirstName + "-" + $LastName + ".docx";
+    $wordObject.saveDocument($path);
 
     # TODO Send to printer action
 
