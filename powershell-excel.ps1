@@ -47,7 +47,9 @@ do {
     $wordObject.replaceWord("***deviceNum***", $deviceNum);
     $wordObject.replaceWord("***sessionDate***", $sessionDate);
 
-    # TODO Replace empty space in signature field with actual signature
+    # Signature
+    # TODO: Replace empty space in signature field with actual signature
+    # TODO: Pick random from multiple signature files, located in "signatures" folder
 
     # Print
     $wordObject.print();
