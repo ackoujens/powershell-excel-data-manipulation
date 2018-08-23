@@ -31,43 +31,31 @@ do {
     # Name
     $firstName=$name.Split(" ")[0]
     $lastName=$name.Substring($firstName.length+1)
-
-    # SearchAWord -Document $Doc -findtext '***firstName***' -replacewithtext $firstName
     $wordObject.replaceWord("***firstName***", $firstName);
-    
-    # SearchAWord -Document $Doc -findtext '***lastName***' -replacewithtext $lastName
     $wordObject.replaceWord("***lastName***", $lastName);
 
     # Team
     $team=ReadCellData -Workbook $Workbook -Cell "C$Row"
     $teamNum=$team.Split(" ")[0]
     $teamName=$team.Split(" ")[1]
-    
-    # SearchAWord -Document $Doc -findtext '***teamNum***' -replacewithtext $teamNum
     $wordObject.replaceWord("***teamNum***", $teamNum);
-
-    # SearchAWord -Document $Doc -findtext '***teamName***' -replacewithtext $teamName
     $wordObject.replaceWord("***teamName***", $teamName);
 
     # Delivery details
     $deviceNum=ReadCellData -Workbook $Workbook -Cell "M$Row"
     $sessionDate=ReadCellData -Workbook $Workbook -Cell "T$Row"
-    
-    # SearchAWord -Document $Doc -findtext '***deviceNum***' -replacewithtext $deviceNum
     $wordObject.replaceWord("***deviceNum***", $deviceNum);
-    
-    # SearchAWord -Document $Doc -findtext '***sessionDate***' -replacewithtext $sessionDate
     $wordObject.replaceWord("***sessionDate***", $sessionDate);
 
     # TODO Replace empty space in signature field with actual signature
 
-    # Document creation
-    # $SaveName="$PSScriptRoot\output\$FirstName-$LastName.docx"
-    # SaveAsWordDoc -document $Doc -Filename $Savename
-    $path = $PSScriptRoot + "\output\" + $FirstName + "-" + $LastName + ".docx";
-    $wordObject.saveDocument($path);
+    # Print
+    $wordObject.print();
 
-    # TODO Send to printer action
+    # Save
+    $path = $PSScriptRoot + "\output\" + $FirstName + "-" + $LastName + ".docx";
+    # FIXME: Removing this line makes the script fail, complaining there is no method "save"
+    $wordObject.save($path);
 
     $Row++
 
