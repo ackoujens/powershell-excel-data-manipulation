@@ -48,7 +48,11 @@ class WordObject {
         $this.searchWord($target, $word);
     }
 
-    [void] saveDocument([string]$fileName) {
+    [void] print() {
+        $this.wordDoc.printout();
+    }
+
+    [void] save([string]$fileName) {
         $this.wordDoc.Saveas($filename);
         $this.wordDoc.close();
     }
