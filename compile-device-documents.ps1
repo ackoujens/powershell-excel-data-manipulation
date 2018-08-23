@@ -1,6 +1,3 @@
-# Reset vars
-Remove-Variable * -ErrorAction SilentlyContinue; Remove-Module *; $error.Clear(); Clear-Host
-
 # Includes
 . .\include\office\WordObject.ps1
 . .\include\office\ExcelObject.ps1

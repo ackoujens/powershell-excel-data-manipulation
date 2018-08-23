@@ -8,7 +8,7 @@
             "type": "PowerShell",
             "request": "launch",
             "name": "PowerShell Launch ",
-            "script": "${workspaceFolder}/powershell-excel.ps1",
+            "script": "${workspaceFolder}/include/SQLObject.ps1",
             "args": [],
             "cwd": "${workspaceFolder}"
         },
