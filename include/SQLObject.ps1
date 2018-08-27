@@ -2,6 +2,47 @@
 # TODO: Include in reset procedure
 Remove-Variable * -ErrorAction SilentlyContinue; Remove-Module *; $error.Clear(); Clear-Host;
 
+class SQLObject {
+    [string] $server;
+    [string] $database;
+    [string] $sqlCommand;
+    [string] $connectionString;
+    [string] $sqlConnection;
+
+    # Initialize object based on filepath
+    SQLObject([string] $server, [string] $database) {
+        # $this.cleanup();
+        $this.server = $server;
+        $this.database = $database;
+    }
+
+    [void] connect() {
+        $this.sqlConnection = New-Object System.Data.SqlClient.SqlConnection;
+        $this.sqlConnection.ConnectionString = "Server=$this.server;Database=$this.database;Integrated Security = true;"
+    }
+
+
+    [string] execQuery() {
+        $connection = new-object system.data.SqlClient.SQLConnection($this.connectionString);
+        $command = new-object system.data.sqlclient.sqlcommand($this.sqlCommand, $connection);
+        $connection.Open();
+
+        $adapter = New-Object System.Data.sqlclient.sqlDataAdapter $command;
+        $dataset = New-Object System.Data.DataSet;
+        $adapter.Fill($dataSet) | Out-Null;
+
+        $connection.Close();
+        $dataSet.Tables;
+
+        return $dataSet;
+    }
+
+
+    # TODO: Close all open SQL connections/processes if exists
+    # [void] cleanup() {}
+}
+$excelObject = [SQLObject]::new("a253pclu02sql1\instomz", "WgkOvl_Interface");
+
 # FIXME: Account does not have sufficiënt rights to connect to SQL database
 function Invoke-SQL {
     param(
@@ -76,8 +117,11 @@ function Check-WGKInterface{
         [Parameter(ValueFromPipeline)]
 		$sAMAccountName
     )
-	
-$SQLServer = "a253pclu01sql1\instomz"
+    
+# FIXME: a253pclu02sql1
+# $SQLServer = "a253pclu01sql1\instomz"
+$SQLServer = "a253pclu02sql1\instomz"
+
 $SQLDBName = "WgkOvl_Interface"
 
 if($sAMAccountName -ne $null){
@@ -178,7 +222,7 @@ function Check-UsersToDisable{
             $date = (get-date).adddays(-1),
             [switch]$week
         )
-        $SQLServer = "a253pclu01sql1\instomz"
+        $SQLServer = "a253pclu02sql1\instomz"
         $SQLDBName = "WgkOvl_Interface"
     
         if($week){
@@ -217,7 +261,7 @@ function Check-UsersToDisable{
         PARAM(
             $script:date = (get-date).adddays(-1)
         )
-        $SQLServer = "a253pclu01sql1\instomz"
+        $SQLServer = "a253pclu02sql1\instomz"
         $SQLDBName = "WgkOvl_Interface"
     
         $date = "'" + $(get-date($date) -Format "yyyy-MM-dd 00:00:00.000") + "'"
