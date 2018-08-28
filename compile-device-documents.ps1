@@ -2,8 +2,9 @@
 . .\include\office\WordObject.ps1
 . .\include\office\ExcelObject.ps1
 
-# Open Excel sheet
+# Init Word/Excel objects
 $excelObject = [ExcelObject]::new("$PSScriptRoot\overzicht_nieuwe_medewerkers.xlsx");
+$wordObject = [WordObject]::new("$PSScriptRoot\document-nieuwe-werknemer.docx");
 
 $Row=2
 
@@ -15,10 +16,6 @@ do {
   $name=$excelObject.readCell("D", $row);
   
   if ($name.length -ne 0) {
-
-    # Init WordObject
-    $wordObject = [WordObject]::new("$PSScriptRoot\document-nieuwe-werknemer.docx");
-
     # Name
     $firstName=$name.Split(" ")[0]
     $lastName=$name.Substring($firstName.length+1)
